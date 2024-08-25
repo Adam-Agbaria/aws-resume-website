@@ -16,7 +16,7 @@
         ],
         "Principal": {
           "AWS": [
-            "arn:aws:iam::<userid>:user/<username>"
+            "arn:aws:iam::537124961939:user/Adam.Agbaria"
           ]
         }
       }

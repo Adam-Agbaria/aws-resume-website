@@ -2,7 +2,7 @@ from unittest.mock import patch, MagicMock
 from src.pipeline_manager.app import lambda_handler
 
 @patch('src.pipeline_manager.app.boto3.resource')
-def test_create_pipeline(mock_boto_resource):
+def test_create_comment(mock_boto_resource):
     print("Mocking boto3.resource")
 
     # Create a mock DynamoDB Table
@@ -12,14 +12,11 @@ def test_create_pipeline(mock_boto_resource):
 
     event = {
         "operation": "create",
-        "pipeline_data": {
-            "pipeline_id": "123",
-            "name": "MyPipeline",
-            "description": "Test pipeline",
-            "config": {
-                "stage": "dev",
-                "region": "us-east-1"
-            }
+        "comment_data": {
+            "comment_id": "123",
+            "name": "John Doe",
+            "comment": "This is a test comment",
+            "timestamp": "2024-08-25T12:00:00Z"
         }
     }
 
@@ -31,21 +28,21 @@ def test_create_pipeline(mock_boto_resource):
     assert response['statusCode'] == 200
 
     # Ensure the correct method was called
-    mock_table.put_item.assert_called_once_with(Item=event['pipeline_data'])
+    mock_table.put_item.assert_called_once_with(Item=event['comment_data'])
 
 
 @patch('src.pipeline_manager.app.boto3.resource')
-def test_read_pipeline(mock_boto_resource):
+def test_read_comment(mock_boto_resource):
     print("Mocking boto3.resource")
 
     # Create a mock DynamoDB Table
     mock_table = MagicMock()
     mock_boto_resource.return_value.Table.return_value = mock_table
-    mock_table.get_item.return_value = {'Item': {"pipeline_id": "123", "name": "MyPipeline"}}
+    mock_table.get_item.return_value = {'Item': {"comment_id": "123", "name": "John Doe", "comment": "This is a test comment"}}
 
     event = {
         "operation": "read",
-        "pipeline_id": "123"
+        "comment_id": "123"
     }
 
     # Call the lambda function with the mock dynamodb resource
@@ -54,13 +51,11 @@ def test_read_pipeline(mock_boto_resource):
     # Check the mock calls
     print("Mock calls:", mock_boto_resource.mock_calls)
     assert response['statusCode'] == 200
-
-    # Ensure the correct method was called
-    mock_table.get_item.assert_called_once_with(Key={'pipeline_id': '123'})
+    mock_table.get_item.assert_called_once_with(Key={'comment_id': '123'})
 
 
 @patch('src.pipeline_manager.app.boto3.resource')
-def test_update_pipeline(mock_boto_resource):
+def test_update_comment(mock_boto_resource):
     print("Mocking boto3.resource")
 
     # Create a mock DynamoDB Table
@@ -70,14 +65,11 @@ def test_update_pipeline(mock_boto_resource):
 
     event = {
         "operation": "update",
-        "pipeline_id": "123",
-        "pipeline_data": {
-            "name": "MyUpdatedPipeline",
-            "description": "Updated pipeline",
-            "config": {
-                "stage": "prod",
-                "region": "us-west-2"
-            }
+        "comment_id": "123",
+        "comment_data": {
+            "name": "Jane Doe",
+            "comment": "This is an updated test comment",
+            "timestamp": "2024-08-26T12:00:00Z"
         }
     }
 
@@ -90,23 +82,23 @@ def test_update_pipeline(mock_boto_resource):
 
     # Ensure the correct method was called
     mock_table.update_item.assert_called_once_with(
-        Key={'pipeline_id': '123'},
-        UpdateExpression="set #name = :n, #desc = :d, #config = :c",
+        Key={'comment_id': '123'},
+        UpdateExpression="set #name = :n, #comment = :c, #timestamp = :t",
         ExpressionAttributeNames={
             '#name': 'name',
-            '#desc': 'description',
-            '#config': 'config'
+            '#comment': 'comment',
+            '#timestamp': 'timestamp'
         },
         ExpressionAttributeValues={
-            ':n': event['pipeline_data']['name'],
-            ':d': event['pipeline_data']['description'],
-            ':c': event['pipeline_data']['config']
+            ':n': event['comment_data']['name'],
+            ':c': event['comment_data']['comment'],
+            ':t': event['comment_data']['timestamp']
         }
     )
 
 
 @patch('src.pipeline_manager.app.boto3.resource')
-def test_delete_pipeline(mock_boto_resource):
+def test_delete_comment(mock_boto_resource):
     print("Mocking boto3.resource")
 
     # Create a mock DynamoDB Table
@@ -116,7 +108,7 @@ def test_delete_pipeline(mock_boto_resource):
 
     event = {
         "operation": "delete",
-        "pipeline_id": "123"
+        "comment_id": "123"
     }
 
     # Call the lambda function with the mock dynamodb resource
@@ -127,4 +119,4 @@ def test_delete_pipeline(mock_boto_resource):
     assert response['statusCode'] == 200
 
     # Ensure the correct method was called
-    mock_table.delete_item.assert_called_once_with(Key={'pipeline_id': '123'})
+    mock_table.delete_item.assert_called_once_with(Key={'comment_id': '123'})

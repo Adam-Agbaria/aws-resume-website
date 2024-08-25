@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: A serverless deployment pipeline using Lambda, DynamoDB, and other AWS
-  services.
+Description: A serverless deployment pipeline using Lambda, DynamoDB, S3, and other
+  AWS services.
 Resources:
   PipelineConfigTable:
     Type: AWS::DynamoDB::Table
@@ -21,7 +21,7 @@ Resources:
     Properties:
       Handler: app.lambda_handler
       Runtime: python3.11
-      CodeUri: s3://my-server-deployment-bucket-proj/c84a982ebf3e451e2c0880b2285189a6
+      CodeUri: s3://my-server-deployment-bucket-proj/8a4dfb5881f21eb453171e8023a8b5db
       Role:
         Fn::GetAtt:
         - BuildFunctionRole
@@ -54,6 +54,8 @@ Resources:
           - Effect: Allow
             Action:
             - codebuild:StartBuild
+            - s3:PutObject
+            - s3:GetObject
             Resource: '*'
     Metadata:
       SamResourceId: BuildFunctionRole
@@ -62,7 +64,7 @@ Resources:
     Properties:
       Handler: app.lambda_handler
       Runtime: python3.11
-      CodeUri: s3://my-server-deployment-bucket-proj/66589c13aa617f6d947b7b81989893c3
+      CodeUri: s3://my-server-deployment-bucket-proj/5b360643d957664c405c02e167e22b16
       Role:
         Fn::GetAtt:
         - DeployFunctionRole
@@ -95,6 +97,7 @@ Resources:
           - Effect: Allow
             Action:
             - codedeploy:CreateDeployment
+            - s3:GetObject
             Resource: '*'
     Metadata:
       SamResourceId: DeployFunctionRole
@@ -144,7 +147,7 @@ Resources:
     Properties:
       Handler: app.lambda_handler
       Runtime: python3.11
-      CodeUri: s3://my-server-deployment-bucket-proj/cfdc018d22e700f5e05241ff9d1ed64e
+      CodeUri: s3://my-server-deployment-bucket-proj/f7eb0308fe3b7bcab66c1c1e31988cb9
       Role:
         Fn::GetAtt:
         - TriggerPipelineFunctionRole
@@ -185,7 +188,7 @@ Resources:
     Properties:
       Handler: app.lambda_handler
       Runtime: python3.11
-      CodeUri: s3://my-server-deployment-bucket-proj/ebdc93cb1390fbd8899b9b0ecb0c80ba
+      CodeUri: s3://my-server-deployment-bucket-proj/9907722924661e531d9598acb38fee98
       Role:
         Fn::GetAtt:
         - PipelineManagerFunctionRole

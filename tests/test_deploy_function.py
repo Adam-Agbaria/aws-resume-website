@@ -16,7 +16,7 @@ def test_deploy_function():
             "s3_key": "my-app.zip"
         }
 
-        # Call the lambda function without passing the mock as an argument
+        # Call the lambda function
         response = lambda_handler(event, None)
 
         # Check the mock calls
@@ -35,3 +35,11 @@ def test_deploy_function():
                 }
             }
         )
+
+# Sample event data for local testing
+sample_event = {
+    "deployment_group": "MyDeploymentGroup",
+    "application_name": "MyApplication",
+    "s3_bucket": "my-bucket",
+    "s3_key": "my-artifact.zip"
+}

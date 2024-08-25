@@ -1,12 +1,9 @@
 {
   "operation": "create",
-  "pipeline_data": {
-    "pipeline_id": "123",
-    "name": "MyPipeline",
-    "description": "Test pipeline",
-    "config": {
-      "stage": "dev",
-      "region": "us-east-1"
-    }
+  "comment_data": {
+    "comment_id": "123",
+    "name": "John Doe",
+    "comment": "This is a test comment",
+    "timestamp": "2024-08-25T12:00:00Z"
   }
 }

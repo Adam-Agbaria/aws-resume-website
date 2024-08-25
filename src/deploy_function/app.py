@@ -29,6 +29,7 @@ def lambda_handler(event, context):
             # Use the actual boto3 client for production
             codedeploy = boto3.client('codedeploy')
 
+        # Create a deployment using CodeDeploy
         response = codedeploy.create_deployment(
             applicationName=application_name,
             deploymentGroupName=deployment_group,

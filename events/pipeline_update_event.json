@@ -1,13 +1,9 @@
 {
-    "operation": "update",
-    "pipeline_id": "123",
-    "pipeline_data": {
-      "name": "MyUpdatedPipeline",
-      "description": "Updated pipeline",
-      "config": {
-        "stage": "prod",
-        "region": "us-west-2"
-        }
-    }
+  "operation": "update",
+  "comment_id": "123",
+  "comment_data": {
+    "name": "Jane Doe",
+    "comment": "This is an updated test comment",
+    "timestamp": "2024-08-26T12:00:00Z"
+  }
 }
-  

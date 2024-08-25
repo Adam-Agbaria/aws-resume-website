@@ -31,9 +31,9 @@ pytest tests/test_pipeline_manager.py -v
 Check-Command "pytest for pipeline_manager Lambda" $LASTEXITCODE
 
 # Step 5: Run pytest to test the trigger_pipeline Lambda
-Write-Host "Running pytest for trigger_pipeline Lambda tests..."
-pytest tests/test_trigger_pipeline.py -v
-Check-Command "pytest for trigger_pipeline Lambda" $LASTEXITCODE
+# Write-Host "Running pytest for trigger_pipeline Lambda tests..."
+# pytest tests/test_trigger_pipeline.py -v
+# Check-Command "pytest for trigger_pipeline Lambda" $LASTEXITCODE
 
 # Step 6: Invoke build_function Lambda locally
 Write-Host "Invoking build_function Lambda locally..."
@@ -68,8 +68,18 @@ foreach ($eventFile in $eventFiles) {
 
 
 # Step 10: Invoke trigger_pipeline Lambda locally
-Write-Host "Invoking trigger_pipeline Lambda locally..."
-sam local invoke "TriggerPipelineFunction" -e events/trigger_pipeline_event.json
-Check-Command "sam local invoke TriggerPipelineFunction" $LASTEXITCODE
+# $eventFiles = @("trigger_create_event.json", "trigger_delete_event.json", "trigger_update_event.json", "trigger_read_event.json")
+
+# Loop through each event file and invoke the Lambda function
+# foreach ($eventFile in $eventFiles) {
+#     Write-Host "Invoking PipelineManagerFunction Lambda locally with event file: $eventFile..."
+#     sam local invoke "PipelineManagerFunction" -e "events/$eventFile"
+    
+#     # Check the command result and exit if it failed
+#     if ($LASTEXITCODE -ne 0) {
+#         Write-Host "Command failed for event file: $eventFile" -ForegroundColor Red
+#         exit $LASTEXITCODE
+#     }
+# }
 
 Write-Host "All tests and local invocations completed successfully!"

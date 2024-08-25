@@ -1,4 +1,6 @@
 {
-    "project_name": "MyBuildProject"
-}
+    "project_name": "MyWebsiteProject",
+    "s3_bucket": "my-website-bucket",
+    "source_directory": "/var/task/website"
+  }
   

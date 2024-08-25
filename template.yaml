@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: A serverless deployment pipeline using Lambda, DynamoDB, and other AWS services.
+Description: A serverless deployment pipeline using Lambda, DynamoDB, S3, and other AWS services.
 
 Resources:
 
@@ -50,7 +50,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - codebuild:StartBuild
-                Resource: "*"  # Replace with specific resource ARN if needed
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: "*" 
 
   DeployFunction:
     Type: AWS::Serverless::Function
@@ -86,7 +88,8 @@ Resources:
               - Effect: Allow
                 Action:
                   - codedeploy:CreateDeployment
-                Resource: "*"  # Replace with specific resource ARN if needed
+                  - s3:GetObject  # Assuming this function also interacts with S3
+                Resource: "*"  
 
   NotificationFunction:
     Type: AWS::Serverless::Function
@@ -122,7 +125,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - sns:Publish
-                Resource: "*"  # Replace with specific resource ARN if needed
+                Resource: "*"  
 
   TriggerPipelineFunction:
     Type: AWS::Serverless::Function
@@ -138,27 +141,27 @@ Resources:
             Path: /trigger
             Method: post
 
-  TriggerPipelineFunctionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Policies:
-        - PolicyName: TriggerPipelineFunctionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - codepipeline:StartPipelineExecution
-                Resource: "*"  # Replace with specific resource ARN if needed
+  # TriggerPipelineFunctionRole:
+  #   Type: AWS::IAM::Role
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service: lambda.amazonaws.com
+  #           Action: sts:AssumeRole
+  #     ManagedPolicyArns:
+  #       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  #     Policies:
+  #       - PolicyName: TriggerPipelineFunctionPolicy
+  #         PolicyDocument:
+  #           Version: "2012-10-17"
+  #           Statement:
+  #             - Effect: Allow
+  #               Action:
+  #                 - codepipeline:StartPipelineExecution
+  #               Resource: "*" 
 
   PipelineManagerFunction:
     Type: AWS::Serverless::Function
