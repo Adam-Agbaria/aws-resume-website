@@ -11,12 +11,12 @@
         ],
         "Effect": "Allow",
         "Resource": [
-          "arn:aws:s3:::my-server-deployment-bucket-proj",
-          "arn:aws:s3:::my-server-deployment-bucket-proj/*"
+          "arn:aws:s3:::adam-agbaria",
+          "arn:aws:s3:::adam-agbaria/*"
         ],
         "Principal": {
           "AWS": [
-            "arn:aws:iam::537124961939:user/Adam.Agbaria"
+            "arn:aws:iam::<userId>:user/<userName>"
           ]
         }
       }

@@ -1,5 +1,7 @@
 from unittest.mock import patch, MagicMock
 from src.pipeline_manager.app import lambda_handler
+from datetime import datetime
+import uuid
 
 @patch('src.pipeline_manager.app.boto3.resource')
 def test_create_comment(mock_boto_resource):
@@ -13,22 +15,28 @@ def test_create_comment(mock_boto_resource):
     event = {
         "operation": "create",
         "comment_data": {
-            "comment_id": "123",
             "name": "John Doe",
-            "comment": "This is a test comment",
-            "timestamp": "2024-08-25T12:00:00Z"
+            "comment": "This is a test comment"
+            # comment_id and timestamp will be generated automatically
         }
     }
 
     # Call the lambda function with the mock dynamodb resource
     response = lambda_handler(event, {}, mock_boto_resource.return_value)
 
+    # Capture the generated UUID and timestamp from the put_item call
+    put_item_args = mock_table.put_item.call_args[1]["Item"]
+    generated_comment_id = put_item_args["comment_id"]
+    generated_timestamp = put_item_args["timestamp"]
+
     # Check the mock calls
     print("Mock calls:", mock_boto_resource.mock_calls)
     assert response['statusCode'] == 200
 
-    # Ensure the correct method was called
-    mock_table.put_item.assert_called_once_with(Item=event['comment_data'])
+    # Ensure that put_item was called with the correct structure, including UUID and timestamp
+    assert uuid.UUID(generated_comment_id)  # Valid UUID
+    assert datetime.fromisoformat(generated_timestamp)  # Valid ISO 8601 timestamp
+    mock_table.put_item.assert_called_once()
 
 
 @patch('src.pipeline_manager.app.boto3.resource')
@@ -68,19 +76,24 @@ def test_update_comment(mock_boto_resource):
         "comment_id": "123",
         "comment_data": {
             "name": "Jane Doe",
-            "comment": "This is an updated test comment",
-            "timestamp": "2024-08-26T12:00:00Z"
+            "comment": "This is an updated test comment"
+            # timestamp will be generated automatically
         }
     }
 
     # Call the lambda function with the mock dynamodb resource
     response = lambda_handler(event, {}, mock_boto_resource.return_value)
 
+    # Capture the generated timestamp from the update_item call
+    update_item_args = mock_table.update_item.call_args[1]["ExpressionAttributeValues"]
+    generated_timestamp = update_item_args[":t"]
+
     # Check the mock calls
     print("Mock calls:", mock_boto_resource.mock_calls)
     assert response['statusCode'] == 200
 
-    # Ensure the correct method was called
+    # Ensure the correct method was called and timestamp was updated
+    assert datetime.fromisoformat(generated_timestamp)  # Valid ISO 8601 timestamp
     mock_table.update_item.assert_called_once_with(
         Key={'comment_id': '123'},
         UpdateExpression="set #name = :n, #comment = :c, #timestamp = :t",
@@ -92,7 +105,7 @@ def test_update_comment(mock_boto_resource):
         ExpressionAttributeValues={
             ':n': event['comment_data']['name'],
             ':c': event['comment_data']['comment'],
-            ':t': event['comment_data']['timestamp']
+            ':t': generated_timestamp
         }
     )
 
